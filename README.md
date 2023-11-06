@@ -2,58 +2,72 @@
 
 Track and monitor your Go programs for free with Google Analytics
 
-The `ga` package is essentially a Go wrapper around the [Google Analytics - Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/v1/reference)
-
-**Warning** This package is 95% generated from the [Parameter Reference](https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters) so it may contain bugs - please report them. GA allows "10 million hits per month per property" and will reject requests after that.
+The `ga` package is essentially a Go wrapper around the [Google Analytics - Measurement Protocol (Google Analytics 4)](https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference?client_type=gtag)
 
 ### Install
 
 ```
-go get -v github.com/jpillora/go-ogle-analytics
+go get -v github.com/openebs/go-ogle-analytics
 ```
 
 ### API
 
-Create a new `client` and `Send()` a 'pageview', 'screenview', 'event', 'transaction', 'item', 'social', 'exception' or 'timing' event.
-
-#### http://godoc.org/github.com/jpillora/go-ogle-analytics
+Create a new `client` and `Send()` an 'event'.
 
 ### Quick Usage
 
-1. Log into GA and create a new property and note its Tracker ID
+1. Log into GA and create a new property and note its Measurement ID
 
-1. Create a `ga-test.go` file
+2. Create a `ga-test.go` file
 
 	``` go
 	package main
 
-	import "github.com/jpillora/go-ogle-analytics"
+	import (
+        gaClient "github.com/openebs/go-ogle-analytics/client"
+        gaEvent "github.com/openebs/go-ogle-analytics/event"
+	)
 
 	func main() {
-		client, err := ga.NewClient("UA-XXXXXXXX-Y")
-		if err != nil {
-			panic(err)
-		}
+	    client, err := gaClient.NewMeasurementClient(
+            gaClient.WithApiSecret("yourApiSecret"),
+            gaClient.WithMeasurementId("G-yourMeasurementClient"),
+            gaClient.WithClientId("uniqueUserId-000000001"),
+	    )
+        if err != nil {
+            panic(err)
+        }
 
-		err = client.Send(ga.NewEvent("Foo", "Bar").Label("Bazz"))
-		if err != nil {
-			panic(err)
-		}
+        event, err := gaEvent.NewOpenebsEvent(
+            gaEvent.WithCategory("Foo"),
+            gaEvent.WithAction("Bar"),
+            gaEvent.WithLabel("Baz"),
+            gaEvent.WithValue(19072023),
+        )
+        if err != nil {
+            panic(err)
+        }
 
-		println("Event fired!")
-	}
+        err = client.Send(event)
+        if err != nil {
+            panic(err)
+        }
+
+        println("Event fired!")
+ 	}
+
 	```
 
-1. In GA, go to Real-time > Events
+3. In GA, go to Report > Realtime
 
-1. Run `ga-test.go`
+4. Run `ga-test.go`
 
 	```
 	$ go run ga-test.go
 	Event fired!
 	```
 
-1. Watch as your event appears
+5. Watch as your event appears
 
 	![foo-ga](https://cloud.githubusercontent.com/assets/633843/5979585/023fc580-a8fd-11e4-803a-956610bcc2e2.png)
 
