@@ -29,6 +29,7 @@ func (c *MeasurementClient) Send(event *event.OpenebsEvent) error {
 	dataPayload, err := payload.NewPayload(
 		payload.WithClientId(client.clientId),
 		payload.WithOpenebsEvent(event),
+		payload.WithUserId(client.clientId),
 	)
 
 	if err != nil {

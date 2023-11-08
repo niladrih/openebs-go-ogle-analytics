@@ -11,6 +11,7 @@ type PayloadOption func(*Payload) error
 type Payload struct {
 	ClientId string     `json:"client_id"`
 	Events   []ApiEvent `json:"events"`
+	UserId   string     `json:"user_id"`
 }
 
 type ApiEvent struct {
@@ -39,6 +40,17 @@ func WithClientId(clientId string) PayloadOption {
 		}
 
 		p.ClientId = clientId
+		return nil
+	}
+}
+
+func WithUserId(userId string) PayloadOption {
+	return func(p *Payload) error {
+		if len(userId) == 0 {
+			return errors.Errorf("failed to set Payload userId: id is an empty string")
+		}
+
+		p.UserId = userId
 		return nil
 	}
 }
